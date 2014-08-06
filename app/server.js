@@ -596,15 +596,19 @@ var Server = function(config) {
             if (!self.config.https) {
                 // Create regular HTTP server
                 self.server = http.createServer(self.app)
-                  .listen(self.config.port, self.config.host);
+                  .listen(self.config.port, self.config.host,function(){
+                            console.log("Express server listening on port " + self.config.port);
+                        });
             } else {
-                // Setup HTTP -> HTTP redirect server
+                // Setup HTTP -> HTTPS redirect server
                 var redirectServer = express();
                 redirectServer.get('*', function(req, res){
                     res.redirect('https://' + req.host + ':' + self.config.https.port + req.path)
                 })
                 http.createServer(redirectServer)
-                  .listen(self.config.port, self.config.host);
+                  .listen(self.config.port, self.config.host,function(){
+                        console.log("Express server listening on port " + self.config.port);
+                    });
                 // Create HTTPS server
                 self.server = https.createServer({
                     key: fs.readFileSync(self.config.https.key),
